@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\DB;
 
 class HandlingDB
 {
+    // $mode: r = read, w = write, a = append
+
     public function export(string $path, string $table, array $where = [], array $select = ['*'])
     {
         $data = DB::table($table)->where($where);
@@ -38,7 +40,6 @@ class HandlingDB
 
     static function import($path, string $table, $columns = [],  $mode = 'r', $delimiter = ',')
     {
-        // $mode: r = read, w = write, a = append
         $csv = fopen(public_path('contacts.csv'), $mode);
 
         $length = 0;

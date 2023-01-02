@@ -2,7 +2,7 @@
 
 namespace App\Http\HandlingDB;
 
-class DB
+class HandlingDB
 {
     public function export(string $entity, array $where = [], array $select = ['*'])
     {

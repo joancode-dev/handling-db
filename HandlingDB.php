@@ -6,52 +6,46 @@ use Illuminate\Support\Facades\DB;
 
 class HandlingDB
 {
-    // $mode: r = read, w = write, a = append
+    private $data;
 
-    private function exportData($stream, $data, $select, $separator)
+    public function export(string $filename, $mode = 'a', string $separator = '|')
     {
+        $stream = fopen(public_path('contacts.csv'), $mode);
+
         $offset = 0;
 
         $limit = 50;
 
-        $count = $data->count();
+        $count = $this->data->count();
 
         $i = 0;
         while ($i < $count) {
-            $list = $data->select($select)
-                ->offset($offset++ * $limit)
-                ->limit($limit)
-                ->get();
+            $list = $this->data->offset($offset++ * $limit)
+                ->limit($limit)->get();
 
             foreach ($list as $fields)
                 fputcsv($stream, json_decode(json_encode($fields), true), $separator);
 
             $i += $limit;
         }
-
-        if (fclose($stream))
-            return "exported!";
+        fclose($stream);
     }
 
-    public function export(string $filename, string $table, array $where = [], array $select = ['*'], $mode = 'a', string $separator = '|')
+    public function table(string $table, array $where = [], array $select = ['*'])
     {
-        $data = DB::table($table)->where($where);
+        $this->data = DB::table($table)->where($where)->select($select);
 
-        $stream = fopen(public_path('contacts.csv'), $mode);
-
-        $this->exportData($stream, $data, $select, $separator);
+        return $this;
     }
 
-    public function exportJoins(string $filename, string $table, array $joins = [], array $where = [], array $select = ['*'], $mode = 'a', $separator = '|')
+    public function joins(string $table, array $joins = [], array $where = [], array $select = ['*'])
     {
-        $data = DB::table($table)->where($where);
+        $this->table($table, $where, $select);
 
         foreach ($joins as $owner => $foreign)
-            $data->join(explode('.', $foreign)[0], $owner, '=', $foreign);
+            $this->data->join(explode('.', $foreign)[0], $owner, '=', $foreign);
 
-        $stream = fopen(public_path('contacts.csv'), $mode);
-
-        $this->exportData($stream, $data, $select, $separator);
+        return $this;
     }
 
     static function import(string $filename, string $table, $columns = [],  $mode = 'r', $separator = '|')

@@ -14,4 +14,5 @@ composer install joan-ramirez/handling-db
 ```
 
 
-    //['contacto.user_id' => 'users.id', ]
+//['contacto.user_id' => 'users.id', ]
+// $mode: r = read, w = write, a = append

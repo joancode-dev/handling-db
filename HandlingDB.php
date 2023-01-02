@@ -8,45 +8,61 @@ class HandlingDB
 {
     // $mode: r = read, w = write, a = append
 
-    public function export(string $path, string $table, array $where = [], array $select = ['*'])
+    private function exportData($stream, $data, $select, $separator)
     {
-        $data = DB::table($table)->where($where);
-
-        $file = fopen(public_path('contacts.csv'), 'a');
-
         $offset = 0;
+
         $limit = 50;
 
-        for ($i = 0; $i < $data->count();) {
+        $count = $data->count();
 
-            $data = $data->select($select)
+        $i = 0;
+        while ($i < $count) {
+            $list = $data->select($select)
                 ->offset($offset++ * $limit)
                 ->limit($limit)
                 ->get();
 
-            foreach ($data as $line)
-                fputcsv($file, json_decode(json_encode($line), true));
+            foreach ($list as $fields)
+                fputcsv($stream, json_decode(json_encode($fields), true), $separator);
 
             $i += $limit;
         }
 
-        if (fclose($file))
+        if (fclose($stream))
             return "exported!";
     }
 
-    public function joinsExport()
+    public function export(string $filename, string $table, array $where = [], array $select = ['*'], $mode = 'a', string $separator = '|')
     {
+        $data = DB::table($table)->where($where);
+
+        $stream = fopen(public_path('contacts.csv'), $mode);
+
+        $this->exportData($stream, $data, $select, $separator);
     }
 
-    static function import($path, string $table, $columns = [],  $mode = 'r', $delimiter = ',')
+    public function exportJoins(string $filename, string $table, array $joins = [], array $where = [], array $select = ['*'], $mode = 'a', $separator = '|')
     {
-        $csv = fopen(public_path('contacts.csv'), $mode);
+        $data = DB::table($table)->where($where);
+
+        foreach ($joins as $owner => $foreign)
+            $data->join(explode('.', $foreign)[0], $owner, '=', $foreign);
+
+        $stream = fopen(public_path('contacts.csv'), $mode);
+
+        $this->exportData($stream, $data, $select, $separator);
+    }
+
+    static function import(string $filename, string $table, $columns = [],  $mode = 'r', $separator = '|')
+    {
+        $stream = fopen(public_path('contacts.csv'), $mode);
 
         $length = 0;
 
         $array = array();
 
-        while (($value = fgetcsv($csv, $length, $delimiter)) !== false) {
+        while (($value = fgetcsv($stream, $length, $separator)) !== false) {
 
             for ($i = 0; $i < count($columns); $i++) {
                 if (count($value) == count($columns)) {

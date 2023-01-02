@@ -13,6 +13,7 @@ composer install joan-ramirez/handling-db
 (new App\Joan-ramirez\Handling-DB)->export('C://ruta/',"users");
 ```
 
+require 'vendor/autoload.php';
 
 //['contacto.user_id' => 'users.id', ]
 // $mode: r = read, w = write, a = append

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\HandlingDB;
+namespace JoanRamirez\HandlingDb;
 
 use Illuminate\Support\Facades\DB;
 

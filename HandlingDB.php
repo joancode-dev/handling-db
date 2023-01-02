@@ -2,11 +2,14 @@
 
 namespace App\Http\HandlingDB;
 
+use Illuminate\Support\Facades\DB;
+
 class HandlingDB
 {
-    public function export(string $entity, array $where = [], array $select = ['*'])
+    public function export(string $path, string $table, array $where = [], array $select = ['*'])
     {
-        $data = $entity::where($where);
+        $data = DB::table($table)->where($where);
+
         $file = fopen(public_path('contacts.csv'), 'a');
 
         $offset = 0;
@@ -20,7 +23,7 @@ class HandlingDB
                 ->get();
 
             foreach ($data as $line)
-                fputcsv($file, $line->getAttributes());
+                fputcsv($file, json_decode(json_encode($line), true));
 
             $i += $limit;
         }
@@ -33,7 +36,24 @@ class HandlingDB
     {
     }
 
-    static function import(string $entity, array $where = [], string $format = null)
+    static function import($path, string $table, $columns = [],  $mode = 'r', $delimiter = ',')
     {
+        // $mode: r = read, w = write, a = append
+        $csv = fopen(public_path('contacts.csv'), $mode);
+
+        $length = 0;
+
+        $array = array();
+
+        while (($value = fgetcsv($csv, $length, $delimiter)) !== false) {
+
+            for ($i = 0; $i < count($columns); $i++) {
+                if (count($value) == count($columns)) {
+                    $array[$columns[$i]] = $value[$i];
+                }
+            }
+
+            DB::table($table)->insert($array);
+        }
     }
 }

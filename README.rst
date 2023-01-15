@@ -18,7 +18,7 @@ Create a handling-db instance
 
 .. code-block:: php
 
-    use JoanRamirez/HandlingDB;
+    use JoanRamirez/HandlingDB/HandlingDB;
 
     $handlingDB = new HandlingDB();
 
@@ -28,10 +28,27 @@ Export a record from a table with the table()->export() methods:
 
     // export table
     $handlingDB->table('users')->export();
+    
+conditional that must be met by the records to be exported:
+
+.. code-block:: php
+
+    $handlingDB->table('users', where: ['role_id' => 4, 'name' => "Joan Ramirez"])->export();
+
+select only the column you want to get:
+
+.. code-block:: php
+
+    $handlingDB->table('users', where: ['role_id' => 4, 'name' => "Joan Ramirez"], select: ['role_id', 'name', 'created_at'])->export();
 
 
-//['contacto.user_id' => 'users.id', ]
+get data from table joins:
 
+.. code-block:: php
+
+    $handlingDB->joins('users', joins:['posts.user_id' => 'users.id'], where: ['users.role_id' => 4, 'posts.category_id' => 2], select: ['users.name', 'posts.title'])->export();
+    
+In this case we join the data from the publications and users table in the same way we can continue joining more data from other tables.
 
 License
 -------

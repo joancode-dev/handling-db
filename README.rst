@@ -1,7 +1,6 @@
-<h1>HandlingDB</h1>
-
-## Documentation
-Package for easy and fast manipulation of the database
+HandlingDB
+================================
+Library for easy and fast manipulation of the database
 
 
 Installation

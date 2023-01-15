@@ -14,7 +14,7 @@ Add ``joan-ramirez/handling-db`` as a require dependency in your ``composer.json
 
 Usage
 -----
-Crea una instancia de handling-db
+Create an instance of handling-db
 
 .. code-block:: php
 

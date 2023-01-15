@@ -6,7 +6,7 @@ Library for easy and fast manipulation of the database
 Installation
 ------------
 
-Add ``fabpot/goutte`` as a require dependency in your ``composer.json`` file:
+Add ``joan-ramirez/handling-db`` as a require dependency in your ``composer.json`` file:
 
 .. code-block:: bash
 

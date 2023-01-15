@@ -30,10 +30,7 @@ Export a record from a table with the table()->export() methods:
     $handlingDB->table('users')->export();
 
 
-require 'vendor/autoload.php';
-
 //['contacto.user_id' => 'users.id', ]
-// $mode: r = read, w = write, a = append
 
 
 License
